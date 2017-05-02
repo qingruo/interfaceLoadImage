@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="js/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			*{margin: 0;padding: 0;}
+			body{
+				background: #333;
+			}
+			.dd{
+				width: 300px;height: 300px;
+				display: block;
+				background: #eee;float: left;
+				margin: 4px;
+				padding: 10px;
+				}
+			
+			#nextpage{
+				position: fixed;
+				left: 50%;bottom: 2px;
+				padding: 10px;
+				border-radius: 4px;
+				outline: none;
+				border: 0;
+				cursor: pointer;
+				transition: all .3s;
+			}
+			#nextpage:hover{
+				//box-shadow: 2px 0 2px #333,0 2px 2px #333;
+				background-color: #ccc;
+				
+			}
+		</style>
+	
+	</head>
+	<body>
+		<div id="div1" style="height: 100%;background: #ccc;padding-left: 14%;"></div>
+		<input type="button" value="更多图片" id="nextpage"/>
+		
+		<script type="text/javascript">
+			
+			$(function(){
+				var page = 1;
+				//alert($(document).height());
+				//alert($(window).height())
+				function getJsonLength(jsonData){
+
+					var jsonLength = 0;
+					
+					for(var item in jsonData){
+					
+						jsonLength++;
+					
+					}
+					
+					return jsonLength;
+					
+				}
+				
+				
+				
+				function getpics(page){
+				  $.ajax({
+					type:"get",
+					url:"huabanfuli.php",
+					data:{'page':page},
+					async:true,
+					success:function(data){
+						//alert(data);
+						var data = $.parseJSON(data);
+						var dataBody = data.showapi_res_body;
+						
+						delete dataBody["ret_code" ];
+						
+						console.log(getJsonLength(dataBody));
+						
+						if ( !getJsonLength(dataBody) ) {
+							alert("没有数据了！")
+							return;
+						}
+						
+						//console.log( dataBody["ret_code" ] )
+						
+						$.each(dataBody, function(key,value) {
+							//console.log(value)
+							var oimg = $("<img>");
+							var odiv = $("<a>");
+							
+							odiv.attr('href',value.url);
+							odiv.addClass("dd");
+							oimg.attr({'src':value.thumb,'title':value.title}).css({'height':300,'width':300});
+							
+							odiv.append(oimg);
+							
+							$("#div1").append(odiv);
+							
+							
+							
+						});
+						
+						console.log(data);
+						
+						
+					},
+					
+					error:function(){
+						
+						alert("错误")
+						
+					}
+					
+					
+					
+				});
+				
+					
+					
+				}
+				getpics(page);
+				$("#nextpage").on('click',function(){
+					page++;
+					getpics(page);
+					
+				});
+			
+				
+				
+				
+				
+				
+			});
+			
+			
+			
+		</script>
+	</body>
+</html>
